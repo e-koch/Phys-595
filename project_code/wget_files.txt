@@ -1,0 +1,11 @@
+http://data.sdss3.org/sas/dr10/boss/spectro/redux/galaxy/v1_0/portsmouth_stellarmass_starforming_krou-v5_5_12.fits.gz
+http://data.sdss3.org/sas/dr10/sdss/spectro/redux/galaxy/v1_0/portsmouth_stellarmass_starforming_krou-26.fits.gz
+http://data.sdss3.org/sas/dr10/boss/spectro/redux/galaxy/v1_0/portsmouth_emlinekin_full-v5_5_12.fits.gz
+http://data.sdss3.org/sas/dr10/sdss/spectro/redux/galaxy/v1_0/portsmouth_emlinekin_full-26.fits.gz
+http://data.sdss3.org/sas/dr10/boss/spectro/redux/galaxy/v1_0/granada_fsps_krou_wideform_nodust-v5_5_12.fits.gz
+http://data.sdss3.org/sas/dr10/sdss/spectro/redux/galaxy/v1_0/granada_fsps_krou_wideform_nodust-26.fits.gz
+http://data.sdss3.org/sas/dr10/boss/spectro/redux/galaxy/v1_0/granada_fsps_krou_wideform_dust-v5_5_12.fits.gz
+http://data.sdss3.org/sas/dr10/sdss/spectro/redux/galaxy/v1_0/granada_fsps-26.fits.gz
+http://data.sdss3.org/sas/dr8/common/sdss-spectro/redux/galSpecLine-dr8.fits
+http://data.sdss3.org/sas/dr8/common/sdss-spectro/redux/galSpecInfo-dr8.fits
+http://data.sdss3.org/sas/dr8/common/sdss-spectro/redux/galSpecExtra-dr8.fits
