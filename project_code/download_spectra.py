@@ -12,20 +12,23 @@ def download_spectra(plateid, fibreid, mjd, survey):
     '''
 
     # Convert to lowercase
-    plateid = plateid.lower()
-    fibreid = fibreid.lower()
+    plateid = str(plateid)
+    fibreid = str(fibreid)
+    mjd = str(mjd)
     survey = survey.lower()
 
-    filename = plateid+"/spec-"+plateid+"-"+mjd+"-"+fibreid+".fits"
+    # Pad with zeros
+    plateid = '0' * (4 - len(plateid)) + plateid
+    fibreid = '0' * (4 - len(fibreid)) + fibreid
 
-    if survey is 'boss':
-        file_suffix = survey+"/spectro/redux/v5_5_12/spectra/"+filename
-    elif survey is 'sdss_legacy':
-        file_suffix = "sdss/spectro/redux/26/spectra/"+filename
-    elif survey is 'sdss_stel_clust':
-        file_suffix = "sdss/spectro/redux/103/spectra/"+filename
-    elif survey is 'sdss_segue':
-        file_suffix = "sdss/spectro/redux/104/spectra/"+filename
+    filename = "spec-"+plateid+"-"+mjd+"-"+fibreid+".fits"
+
+    if survey == 'boss':
+        file_suffix = "sdss/spectro/redux/v5_5_12/spectra/lite/"+plateid+"/"+filename
+    elif survey == 'sdss' or survey == 'segue1':
+        file_suffix = "sdss/spectro/redux/26/spectra/lite/"+plateid+"/"+filename
+    elif survey == 'segue2':
+        file_suffix = "sdss/spectro/redux/104/spectra/lite/"+plateid+"/"+filename
     else:
         raise NameError("Check the survey name. Inputted was %s" % (survey))
 
