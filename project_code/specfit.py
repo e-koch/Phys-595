@@ -6,7 +6,7 @@ Fit Gaussian models to the Hydrogen Balmer series for SDSS galaxy spectra.
 import numpy as np
 from pyspeckit import Spectrum
 from astropy.io import fits
-from pandas import DataFrame
+from pandas import Series
 
 
 line_dict = {"Halp + NII": [None, 6562.8, 3.0, None, 6583.4, 3.0],
@@ -88,6 +88,13 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
     line_params = np.array(line_params).reshape((rows, 3))
     line_errs = np.array(line_errs).reshape((rows, 3))
 
+    # No point in saving lambda if it is fixed.
+    if fix_lambda:
+        line_params = np.hstack([line_params[:, 0], line_params[:, -1]])
+        line_errs = np.hstack([line_errs[:, 0], line_errs[:, -1]])
+        line_param_names = ['Amplitude', 'Width', 'Amplitude Error',
+                            'Width Error']
+
     line_names = []
     for line in lines:
         line = line.split(" + ")
@@ -95,19 +102,18 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
             for l in line:
                 line_names.append(l)
         else:
-            line_names.append(line)
+            line_names.append(line[0])
 
-    # No point in saving lambda if it is fixed.
-    if fix_lambda:
-        line_params = np.hstack([line_params[0, :], line_params[-1, :]])
-        line_errs = np.hstack([line_errs[0, :], line_errs[-1, :]])
-        line_param_names = ['Amplitude', 'Width', 'Amplitude Error',
-                            'Width Error']
+    line_and_par_names = []
+    for name in line_names:
+        for par in line_param_names:
+            line_and_par_names.append(name+" "+par)
 
-    df = DataFrame(np.hstack(line_params, line_errs),
-                   columns=line_param_names, index=line_names)
+    # Return as a named series, which can be concatenated into a dataframe.
+    ser = Series(np.hstack([line_params, line_errs]).ravel(),
+                 index=line_and_par_names)
 
-    return df
+    return ser
 
 
 # Utility Functions
