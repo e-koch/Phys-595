@@ -7,6 +7,7 @@ import numpy as np
 from pyspeckit import Spectrum
 from astropy.io import fits
 from pandas import Series
+from scipy.ndimage import median_filter
 
 
 line_dict = {"Halp + NII": [None, 6562.8, 3.0, None, 6583.4, 3.0],
@@ -22,7 +23,7 @@ line_dict = {"Halp + NII": [None, 6562.8, 3.0, None, 6583.4, 3.0],
 def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
                                 "Ca H + Ca K",
                                 "Mg", "NaI", "OIIIa + OIIIb"],
-               fix_lambda=True, verbose=False):
+               fix_lambda=True, smooth_size=3, verbose=False):
     '''
     Given a FITS file, fit the specified lines to the spectra.
     '''
@@ -30,7 +31,16 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
     spec_file = fits.open(filename)
 
     flux = spec_file[1].data["flux"]
+
+    # Correct for redshift
     lam_wav = 10**spec_file[1].data["loglam"] / (1 + spec_file[2].data["Z"])
+
+    # Correct for vacuum-to-air
+    lam_wav = vac_to_air(lam_wav)
+
+    # Optionally smooth the spectrum
+    if smooth_size != 0:
+        flux = median_filter(flux, smooth_size)
 
     spec = Spectrum(data=flux, xarr=lam_wav,
                     header=spec_file[1].header,
@@ -125,3 +135,11 @@ def find_nearest(array, value):
     '''
     idx = (np.abs(array-value)).argmin()
     return array[idx]
+
+
+@np.vectorize
+def vac_to_air(lam):
+    '''
+    Vacuum to air wavelength conversion from Morton (1991)
+    '''
+    return lam / (1.0 + 2.735182e-4 + 131.4182 * lam**-2 + 2.76249e8 * lam**-4)
