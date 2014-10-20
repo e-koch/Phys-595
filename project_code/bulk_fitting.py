@@ -5,7 +5,7 @@ Bulk spectral line fitting with SDSS galaxy spectra
 
 import os
 from astropy.io import fits
-from pandas import concat
+from pandas import DataFrame
 
 # Bring in the package funcs
 from specfit import do_specfit
@@ -31,19 +31,19 @@ def bulk_fit(obs_file, output_file, keep_spectra=False):
 
         # Download the spectrum
         spec_name = \
-            download_spectra(spec_info['PLATEID'], spec_info['FIBREID'],
+            download_spectra(spec_info['PLATE'], spec_info['FIBERID'],
                              spec_info['MJD'], spec_info['SURVEY'])
 
         spec_df = do_specfit(spec_name, verbose=False)
 
         if i == 0:
-            df = spec_df
+            df = DataFrame(spec_df, columns=[spec_name[:-5]])
         else:
-            df = concat([df, spec_df])
+            df[spec_name[:-5]] = spec_df
 
         if not keep_spectra:
             os.system('rm ' + spec_name)
 
-    df.write(output_file)
+    df.to_csv(output_file)
 
     return
