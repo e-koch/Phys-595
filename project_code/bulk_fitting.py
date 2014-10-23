@@ -24,7 +24,7 @@ def bulk_fit(obs_file, output_file, keep_spectra=False):
     spectra_data = data_file[1].data
     del data_file
 
-    num_spectra = spectra_data['Z'].shape[0]
+    num_spectra = spectra_data.size
 
     for i in range(num_spectra):
         spec_info = spectra_data[i]
