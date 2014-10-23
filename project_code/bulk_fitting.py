@@ -12,7 +12,8 @@ from specfit import do_specfit
 from download_spectra import download_spectra
 
 
-def bulk_fit(obs_file, output_file, keep_spectra=False):
+def bulk_fit(obs_file, output_file, keep_spectra=False, split_save=True,
+             num_save=10):
     '''
     Downloads files based off of the entries in the given file, performs
     spectral line fitting and saves the results to a FITS table.
@@ -25,6 +26,8 @@ def bulk_fit(obs_file, output_file, keep_spectra=False):
     del data_file
 
     num_spectra = spectra_data.size
+    save_nums = [(num_spectra/num_save)*(i+1) for i in range(num_save)]
+    save_nums[-1] = num_spectra
 
     for i in range(num_spectra):
         spec_info = spectra_data[i]
@@ -41,10 +44,14 @@ def bulk_fit(obs_file, output_file, keep_spectra=False):
         else:
             df[spec_name[:-5]] = spec_df
 
+        if split_save and i in save_nums:
+            posn = [j for j, x in enumerate(save_nums) if x == i][0]
+            df.to_csv(output_file[:-4]+"_"+str(posn+1))
         if not keep_spectra:
             os.system('rm ' + spec_name)
 
-    df.to_csv(output_file)
+    if not split_save:
+        df.to_csv(output_file)
 
     return
 
