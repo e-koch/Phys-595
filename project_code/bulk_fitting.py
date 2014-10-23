@@ -47,3 +47,12 @@ def bulk_fit(obs_file, output_file, keep_spectra=False):
     df.to_csv(output_file)
 
     return
+
+if __name__ == "__main__":
+
+    import sys
+
+    input_file = str(sys.argv[1])
+    output_file = str(sys.argv[2])
+
+    bulk_fit(input_file, output_file)
