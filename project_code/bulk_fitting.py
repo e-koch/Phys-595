@@ -37,6 +37,8 @@ def bulk_fit(obs_file, output_file, keep_spectra=False, split_save=True,
             download_spectra(spec_info['PLATE'], spec_info['FIBERID'],
                              spec_info['MJD'], spec_info['SURVEY'])
 
+        spec_name = "spectra/" + spec_name
+
         spec_df = do_specfit(spec_name, verbose=False)
 
         if i == 0:
