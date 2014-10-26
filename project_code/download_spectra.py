@@ -6,7 +6,8 @@ Download SDSS spectra from the plate ID and fibre
 import os
 from astropy.io import fits
 
-def download_spectra(plateid, fibreid, mjd, survey, download=False):
+def download_spectra(plateid, fibreid, mjd, survey, download=False,
+                     name_only=True):
     '''
     Download an SDSS spectrum given the parameters.
     '''
@@ -41,6 +42,9 @@ def download_spectra(plateid, fibreid, mjd, survey, download=False):
         except IOError:
             pass
 
+        return filename
+
+    elif name_only:
         return filename
 
     else:
