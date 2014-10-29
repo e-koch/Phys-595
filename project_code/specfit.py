@@ -55,12 +55,12 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
         line_props = line_dict[line]
         num_lines = len(line_props) / 3
 
-        if verbose:
-            spec.plotter(xmin=line_props[1]-100, xmax=line_props[1]+100)
+        # if verbose:
+        spec.plotter(xmin=line_props[1]-100, xmax=line_props[-2]+100)
 
-        spec.baseline(xmin=line_props[1]-100, xmax=line_props[1]+100,
-                      exclude=[[line_props[1]-20, line_props[1]+20]], order=1,
-                      subtract=False, highlight_fitregions=True,
+        spec.baseline(xmin=line_props[1]-100, xmax=line_props[-2]+100,
+                      exclude=[[line_props[1]-20, line_props[-2]+20]], order=1,
+                      subtract=False, highlight_fitregions=False,
                       reset_selection=True, annotate=False)
 
         # Estimate the amplitude of the line after background subtraction
@@ -115,8 +115,8 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
             line_names.append(line[0])
 
     line_and_par_names = []
-    for name in line_names:
-        for par in line_param_names:
+    for par in line_param_names:
+        for name in line_names:
             line_and_par_names.append(name+" "+par)
 
     # Return as a named series, which can be concatenated into a dataframe.
