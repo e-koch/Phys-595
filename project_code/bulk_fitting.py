@@ -12,7 +12,7 @@ from specfit import do_specfit
 from download_spectra import download_spectra
 
 
-def bulk_fit(obs_file, output_file, keep_spectra=False, split_save=True,
+def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
              num_save=10):
     '''
     Downloads files based off of the entries in the given file, performs
