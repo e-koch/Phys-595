@@ -55,19 +55,19 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
         line_props = line_dict[line]
         num_lines = len(line_props) / 3
 
-        # if verbose:
-        spec.plotter(xmin=line_props[1]-100, xmax=line_props[-2]+100)
+        spec_line = spec.slice(start=line_props[1]-100, stop=line_props[-2]+100,
+                               units='Angstroms')
 
-        spec.baseline(xmin=line_props[1]-100, xmax=line_props[-2]+100,
-                      exclude=[[line_props[1]-20, line_props[-2]+20]], order=1,
-                      subtract=False, highlight_fitregions=False,
-                      reset_selection=True, annotate=False)
+        if verbose:
+            spec_line.plotter()
+
+        spec_line.baseline(order=1, subract=False, annotate=False)
 
         # Estimate the amplitude of the line after background subtraction
         # using the peak of where the line is expected to be
         baseline_model = lambda x, p: p[1] + p[0]*x
 
-        base_params = spec.baseline.baselinepars
+        base_params = spec_line.baseline.baselinepars
 
         for i in range(num_lines):
             lam_line = find_nearest(lam_wav, line_props[3*i+1])
@@ -85,11 +85,11 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
         else:
             multifit = False
 
-        spec.specfit(guesses=line_props, fixed=fix, fittype="gaussian",
-                     multifit=multifit)
+        spec_line.specfit(guesses=line_props, fixed=fix, fittype="gaussian",
+                          multifit=multifit)
 
-        line_params.extend(spec.specfit.modelpars)
-        line_errs.extend(spec.specfit.modelerrs)
+        line_params.extend(spec_line.specfit.modelpars)
+        line_errs.extend(spec_line.specfit.modelerrs)
 
         if verbose:
             raw_input("Continue?")
