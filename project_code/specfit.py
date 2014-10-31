@@ -85,11 +85,17 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
         else:
             multifit = False
 
-        spec_line.specfit(guesses=line_props, fixed=fix, fittype="gaussian",
-                          multifit=multifit)
+        try:
+            spec_line.specfit(guesses=line_props, fixed=fix,
+                              fittype="gaussian",
+                              multifit=multifit)
 
-        line_pars = spec_line.specfit.modelpars
-        line_errors = spec_line.specfit.modelerrs
+            line_pars = spec_line.specfit.modelpars
+            line_errors = spec_line.specfit.modelerrs
+
+        except ValueError:
+            line_pars = [0.0] * 3 * num_lines
+            line_errs = [0.0] * 3 * num_lines
 
         # For multifits, a bad fit for a line that isn't there increases the
         # error on a fit for a line that is. Remove
