@@ -39,7 +39,13 @@ def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
 
         spec_name = "spectra/" + spec_name
 
-        spec_df = do_specfit(spec_name, verbose=False)
+        try:
+            spec_df = do_specfit(spec_name, verbose=False)
+        except ValueError:
+            download_spectra(spec_info['PLATE'], spec_info['FIBERID'],
+                             spec_info['MJD'], spec_info['SURVEY'],
+                             download=True)
+            spec_df = do_specfit(spec_name, verbose=False)
 
         if i == 0:
             df = DataFrame(spec_df, columns=[spec_name[:-5]])
@@ -48,7 +54,7 @@ def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
 
         if split_save and i in save_nums:
             posn = [j for j, x in enumerate(save_nums) if x == i][0]
-            df.to_csv(output_file[:-4]+"_"+str(posn+1))
+            df.to_csv(output_file[:-4]+"_"+str(posn+1)+".csv")
         if not keep_spectra:
             os.system('rm ' + spec_name)
 
