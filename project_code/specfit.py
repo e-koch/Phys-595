@@ -88,8 +88,55 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
         spec_line.specfit(guesses=line_props, fixed=fix, fittype="gaussian",
                           multifit=multifit)
 
-        line_params.extend(spec_line.specfit.modelpars)
-        line_errs.extend(spec_line.specfit.modelerrs)
+        line_pars = spec_line.specfit.modelpars
+        line_errors = spec_line.specfit.modelerrs
+
+        # For multifits, a bad fit for a line that isn't there increases the
+        # error on a fit for a line that is. Remove
+        # if num_lines > 1:
+        #     t_stats = [np.logical_and(np.abs(k)/j < 1, j != 0)
+        #                for k, j in zip(line_pars, line_errors)]
+
+        #     if np.any(t_stats):
+        #         posn = [f for f, j in enumerate(t_stats) if j]
+        #         bad_line = []
+        #         for pos in posn:
+        #             for n in range(1, num_lines+1):
+        #                 if pos < 3*i and pos > 3*(i-1):
+        #                     bad_line.append(n)
+        #                     break
+
+        #         # If they're both bad, just continue
+        #         if len(bad_line) == num_lines:
+        #             pass
+
+        #         else:
+        #             bad_line = np.sort(bad_line)[::-1]
+        #             for bad in bad_line:
+        #                 bad = int(bad) - 1
+        #                 for p in range(3)[::-1]:
+        #                     line_props.pop(3*bad + p)
+        #                     fix.pop(3*bad + p)
+
+        #             if (num_lines - len(bad_line)) == 1:
+        #                 multifit = False
+
+        #             spec_line.specfit(guesses=line_props,
+        #                               fixed=fix,
+        #                               fittype="gaussian",
+        #                               multifit=multifit)
+
+        #             good_line = \
+        #                 np.asarray(list(set(range(1, num_lines+1)) & set(bad_line)))
+
+        #             good_line -= 1
+
+        #             for good in good_line:
+        #                 line_pars[3*(good-1):3*good] = spec_line.specfit.modelpars
+        #                 line_errors[3*(good-1):3*good] = spec_line.specfit.modelerrs
+
+        line_params.extend(line_pars)
+        line_errs.extend(line_errors)
 
         if verbose:
             raw_input("Continue?")
