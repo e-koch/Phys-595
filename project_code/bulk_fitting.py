@@ -4,6 +4,7 @@ Bulk spectral line fitting with SDSS galaxy spectra
 '''
 
 import os
+import shutil
 from astropy.io import fits
 from pandas import DataFrame
 
@@ -45,6 +46,7 @@ def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
             download_spectra(spec_info['PLATE'], spec_info['FIBERID'],
                              spec_info['MJD'], spec_info['SURVEY'],
                              download=True)
+            shutil.move(spec_name.split("/")[-1], spec_name.split("/")[0])
             spec_df = do_specfit(spec_name, verbose=False)
 
         if i == 0:
