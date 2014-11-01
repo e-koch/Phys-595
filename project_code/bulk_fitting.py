@@ -82,4 +82,4 @@ if __name__ == "__main__":
 
     restart_point = int(sys.argv[3])
 
-    bulk_fit(input_file, output_file)
+    bulk_fit(input_file, output_file, num_start=restart_point)
