@@ -99,8 +99,8 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
             line_errors = [0.0] * 3 * num_lines
 
         except mpfitException:
-            line_pars = [0.0] * 3 * num_lines
-            line_errors = [0.0] * 3 * num_lines
+            line_pars = [np.NaN] * 3 * num_lines
+            line_errors = [np.NaN] * 3 * num_lines
 
         # For multifits, a bad fit for a line that isn't there increases the
         # error on a fit for a line that is. Remove
