@@ -5,6 +5,7 @@ Fit Gaussian models to the Hydrogen Balmer series for SDSS galaxy spectra.
 
 import numpy as np
 from pyspeckit import Spectrum
+from pyspeckit.mpfit.mpfit import mpfitException
 from astropy.io import fits
 from pandas import Series
 from scipy.ndimage import median_filter
@@ -94,6 +95,10 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
             line_errors = spec_line.specfit.modelerrs
 
         except ValueError:
+            line_pars = [0.0] * 3 * num_lines
+            line_errors = [0.0] * 3 * num_lines
+
+        except mpfitException:
             line_pars = [0.0] * 3 * num_lines
             line_errors = [0.0] * 3 * num_lines
 
