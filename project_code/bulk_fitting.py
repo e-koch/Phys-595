@@ -38,7 +38,9 @@ def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
     save_nums[-1] = num_spectra
     save_nums.append(0)
 
-    for i in range(save_nums[num_start], num_spectra):
+    start_pt = save_nums[num_start]
+
+    for i in range(start_pt, num_spectra):
         spec_info = spectra_data[i]
 
         # Download the spectrum
@@ -57,7 +59,7 @@ def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
             shutil.move(spec_name.split("/")[-1], spec_name.split("/")[0])
             spec_df = do_specfit(spec_name, verbose=False)
 
-        if i == 0:
+        if i == start_pt:
             df = DataFrame(spec_df, columns=[spec_name[:-5]])
         else:
             df[spec_name[:-5]] = spec_df
