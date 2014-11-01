@@ -14,10 +14,17 @@ from download_spectra import download_spectra
 
 
 def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
-             num_save=10):
+             num_save=10, num_start=-1):
     '''
     Downloads files based off of the entries in the given file, performs
     spectral line fitting and saves the results to a FITS table.
+
+    Parameters
+    ----------
+
+    num_start : int {<num_save}
+        Used for restarting at a point set by num_save. Default is -1, which
+        starts at the beginning.
     '''
 
     # Open the file
@@ -29,8 +36,9 @@ def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
     num_spectra = spectra_data.size
     save_nums = [(num_spectra/num_save)*(i+1) for i in range(num_save)]
     save_nums[-1] = num_spectra
+    save_nums.append(0)
 
-    for i in range(num_spectra):
+    for i in range(save_nums[num_start], num_spectra):
         spec_info = spectra_data[i]
 
         # Download the spectrum
@@ -71,5 +79,7 @@ if __name__ == "__main__":
 
     input_file = str(sys.argv[1])
     output_file = str(sys.argv[2])
+
+    restart_point = int(sys.argv[3])
 
     bulk_fit(input_file, output_file)
