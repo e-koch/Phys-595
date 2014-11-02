@@ -56,8 +56,17 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
         line_props = line_dict[line]
         num_lines = len(line_props) / 3
 
-        spec_line = spec.slice(start=line_props[1]-100, stop=line_props[-2]+100,
+        spec_line = spec.slice(start=line_props[1]-100,
+                               stop=line_props[-2]+100,
                                units='Angstroms')
+
+        if spec_line.xarr < len(line_props):
+            print("Not enough data to fit for " + line + " in " + filename)
+            line_pars = [np.NaN] * 3 * num_lines
+            line_errors = [np.NaN] * 3 * num_lines
+            line_params.extend(line_pars)
+            line_errs.extend(line_errors)
+            continue
 
         if verbose:
             spec_line.plotter()
