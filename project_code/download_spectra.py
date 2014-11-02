@@ -6,6 +6,11 @@ Download SDSS spectra from the plate ID and fibre
 import os
 from astropy.io import fits
 
+segue1_list = ['1960', '1961', '1962', '1963', '2078', '2079', '2174', '2185',
+               '2247', '2255', '2256', '2333', '2338', '2377', '2475', '2476',
+               '2667', '2671', '2675', '2800', '2821', '2887', '2912']
+
+
 def download_spectra(plateid, fibreid, mjd, survey, download=False,
                      name_only=True):
     '''
@@ -26,8 +31,10 @@ def download_spectra(plateid, fibreid, mjd, survey, download=False,
 
     if survey == 'boss':
         file_suffix = "sdss/spectro/redux/v5_5_12/spectra/lite/"+plateid+"/"+filename
-    elif survey == 'sdss' or survey == 'segue1':
+    elif survey == 'sdss' or survey == 'segue1' and plateid not in segue1_list:
         file_suffix = "sdss/spectro/redux/26/spectra/lite/"+plateid+"/"+filename
+    elif survey == 'segue1' and plateid in segue1_list:
+        file_suffix = "sdss/spectro/redux/103/spectra/lite/"+plateid+"/"+filename
     elif survey == 'segue2':
         file_suffix = "sdss/spectro/redux/104/spectra/lite/"+plateid+"/"+filename
     else:
