@@ -36,7 +36,7 @@ def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
 
     num_spectra = spectra_data.size
     save_nums = [(num_spectra/num_save)*(i+1) for i in range(num_save)]
-    save_nums[-1] = num_spectra
+    save_nums[-1] = num_spectra-1
     save_nums.append(0)
 
     start_pt = save_nums[num_start]
