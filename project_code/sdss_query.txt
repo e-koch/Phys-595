@@ -1,9 +1,0 @@
--- SDSS SQL query
-
-SELECT specObjID
-FROM SpecObj
-WHERE
-    class = 'GALAXY'
-    AND z < 2.4
-    --AND z_err < 0.05
-    --AND SN > 5
