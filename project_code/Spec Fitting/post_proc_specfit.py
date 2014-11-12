@@ -38,16 +38,17 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
     '''
 
     data = read_csv(filename)
+    del data["Unnamed: 0"]
 
     data_copy = data.T.copy()
     # There are 11 fitted lines and 4 parameters
 
-    for i in range(11):
+    for i in range(1):
         line_pars = \
-            [np.asarray(data.iloc[i][1:]),
-             np.asarray(data.iloc[i+11][1:]),
-             np.asarray(data.iloc[i+22][1:]),
-             np.asarray(data.iloc[i+33][1:])]
+            [np.asarray(data.iloc[i]),
+             np.asarray(data.iloc[i+11]),
+             np.asarray(data.iloc[i+22]),
+             np.asarray(data.iloc[i+33])]
 
         good_err_1 = (line_pars[2] > 0)
         good_err_2 = (line_pars[3] > 0)
@@ -82,15 +83,9 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
         line_pars[2][posns_wid[0]] = 0.0
         line_pars[3][posns_wid[0]] = 0.0
 
-        data_copy[i] = Series(line_pars[0], index=data_copy.index[1:])
-        data_copy[i+11] = Series(line_pars[1], index=data_copy.index[1:])
-        data_copy[i+22] = Series(line_pars[2], index=data_copy.index[1:])
-        data_copy[i+33] = Series(line_pars[3], index=data_copy.index[1:])
-
-
-        data_copy[i]["Unnamed: 0"] = data.ix[i][0]
-        data_copy[i+11]["Unnamed: 0"] = data.ix[i+11][0]
-        data_copy[i+22]["Unnamed: 0"] = data.ix[i+22][0]
-        data_copy[i+33]["Unnamed: 0"] = data.ix[i+33][0]
+        data_copy[i] = Series(line_pars[0], index=data_copy.index)
+        data_copy[i+11] = Series(line_pars[1], index=data_copy.index)
+        data_copy[i+22] = Series(line_pars[2], index=data_copy.index)
+        data_copy[i+33] = Series(line_pars[3], index=data_copy.index)
 
     data_copy.to_csv(filename[:-4] + "_cleaned.csv")
