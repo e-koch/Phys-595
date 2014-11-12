@@ -4,7 +4,7 @@ Post-process spectral line fitting results
 '''
 
 import numpy as np
-from pandas import read_csv, notnull, Series, concat
+from pandas import read_csv, Series, concat
 
 
 def concat_csvs(file_list, output_name, save=True):
@@ -12,14 +12,16 @@ def concat_csvs(file_list, output_name, save=True):
     Concatenate csv files.
     '''
 
-    data = read_csv(file_list[0])
+    data = [read_csv(file_nm) for file_nm in file_list]
 
-    for name in file_list[1:]:
-        data = concat(data, read_csv(name))
+    index = data[0]["Unnamed: 0"]
 
-    data.index = data['Unnamed: 0']
+    for dat in data:
+        del dat['Unnamed: 0']
 
-    del data['Unnamed: 0']
+    data = concat(data, ignore_index=False, axis=1)
+
+    data.index = index
 
     if save:
         data.to_csv(output_name)
