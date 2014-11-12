@@ -47,27 +47,28 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
              np.asarray(data.iloc[i+22][1:]),
              np.asarray(data.iloc[i+33][1:])]
 
-        good_err = np.logical_or(line_pars[2] > 0,
-                                 line_pars[3] > 0)
+        good_err_1 = (line_pars[2] > 0)
+        good_err_2 = (line_pars[3] > 0)
 
-        posns_err = np.where(good_err == 0)
+        posns_err_1 = np.where(good_err_1 == 0)
+        posns_err_2 = np.where(good_err_2 == 0)
 
-        good_sn_amp = \
-            np.logical_or(np.abs(line_pars[0]/line_pars[2]) >= min_amp_sn,
-                          notnull(line_pars[0]/line_pars[2]))
+        good_sn_amp = (np.abs(line_pars[0]/line_pars[2]) >= min_amp_sn)
 
         posns_amp = np.where(good_sn_amp == 0)
 
-        good_sn_wid = \
-            np.logical_or(np.abs(line_pars[1]/line_pars[3]) >= min_wid_sn,
-                          notnull(line_pars[1]/line_pars[3]))
+        good_sn_wid = (np.abs(line_pars[1]/line_pars[3]) >= min_wid_sn)
 
         posns_wid = np.where(good_sn_wid == 0)
 
-        line_pars[0][posns_err[0]] = 0.0
-        line_pars[1][posns_err[0]] = 0.0
-        line_pars[2][posns_err[0]] = 0.0
-        line_pars[3][posns_err[0]] = 0.0
+        line_pars[0][posns_err_1[0]] = 0.0
+        line_pars[1][posns_err_1[0]] = 0.0
+        line_pars[2][posns_err_1[0]] = 0.0
+        line_pars[3][posns_err_1[0]] = 0.0
+        line_pars[0][posns_err_2[0]] = 0.0
+        line_pars[1][posns_err_2[0]] = 0.0
+        line_pars[2][posns_err_2[0]] = 0.0
+        line_pars[3][posns_err_2[0]] = 0.0
 
         line_pars[0][posns_amp[0]] = 0.0
         line_pars[1][posns_amp[0]] = 0.0
@@ -79,17 +80,15 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
         line_pars[2][posns_wid[0]] = 0.0
         line_pars[3][posns_wid[0]] = 0.0
 
-        data_copy[i] = Series(line_pars[0], index=data_copy.index)
-        data_copy[i+11] = Series(line_pars[1], index=data_copy.index)
-        data_copy[i+22] = Series(line_pars[2], index=data_copy.index)
-        data_copy[i+33] = Series(line_pars[3], index=data_copy.index)
+        data_copy[i] = Series(line_pars[0], index=data_copy.index[1:])
+        data_copy[i+11] = Series(line_pars[1], index=data_copy.index[1:])
+        data_copy[i+22] = Series(line_pars[2], index=data_copy.index[1:])
+        data_copy[i+33] = Series(line_pars[3], index=data_copy.index[1:])
 
 
-        line_pars[0]["Unnamed: 0"] = data_copy[i][0]
-        line_pars[1]["Unnamed: 0"] = data_copy[i+11][0]
-        line_pars[2]["Unnamed: 0"] = data_copy[i+22][0]
-        line_pars[3]["Unnamed: 0"] = data_copy[i+33][0]
-
-    print ah
+        data_copy[i]["Unnamed: 0"] = data.ix[i][0]
+        data_copy[i+11]["Unnamed: 0"] = data.ix[i+11][0]
+        data_copy[i+22]["Unnamed: 0"] = data.ix[i+22][0]
+        data_copy[i+33]["Unnamed: 0"] = data.ix[i+33][0]
 
     data_copy.to_csv(filename[:-4] + "_cleaned.csv")
