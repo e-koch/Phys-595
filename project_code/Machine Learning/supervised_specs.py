@@ -4,15 +4,22 @@ Perform supervised learning using the MPA-JHU results.
 Used DR8.
 '''
 
+# Setup non-interactive plotting
+import matplotlib
+matplotlib.use('Agg')
+
 import numpy as np
 import matplotlib.pyplot as p
+
+# Use seaborn for pretty plots
+import seaborn
 
 from sklearn.cross_validation import train_test_split
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report
-from sklearn.learning_curve import plot_learning_curve
+from plot_learning_curve import plot_learning_curve
 from sklearn.cross_validation import ShuffleSplit
-from sklearn.svm import NuSVC
+from sklearn.svm import SVC
 
 from astropy.io import fits
 
@@ -23,7 +30,7 @@ view = True
 
 # Load in the classifications
 extra = fits.open('galSpecExtra-dr8.fits')
-info = fits.opend('galSpecInfro-dr8.fits')  # has z and z_err and sn_median
+info = fits.open('galSpecInfo-dr8.fits')  # has z and z_err and sn_median
 line_pars = fits.open('galSpecLine-dr8.fits')
 
 # Samples
@@ -36,37 +43,45 @@ sn = info[1].data['SN_MEDIAN']
 # For the line parameters, apply the same discarding process that was Used
 # for the DR10 spec fits.
 
-amps = np.hstack([line_pars[1].data["H_ALPHA_FLUX"],
+amps = np.vstack([line_pars[1].data["H_ALPHA_FLUX"],
                   line_pars[1].data["H_BETA_FLUX"],
                   line_pars[1].data["H_GAMMA_FLUX"],
                   line_pars[1].data["H_DELTA_FLUX"],
                   line_pars[1].data["OIII_4959_FLUX"],
                   line_pars[1].data["OIII_5007_FLUX"],
-                  line_pars[1].data["NII-6584_FLUX"]])
+                  line_pars[1].data["NII_6584_FLUX"]]).T
 
-widths = np.hstack([line_pars[1].data["H_ALPHA_EQW"],
+widths = np.vstack([line_pars[1].data["H_ALPHA_EQW"],
                     line_pars[1].data["H_BETA_EQW"],
                     line_pars[1].data["H_GAMMA_EQW"],
                     line_pars[1].data["H_DELTA_EQW"],
                     line_pars[1].data["OIII_4959_EQW"],
                     line_pars[1].data["OIII_5007_EQW"],
-                    line_pars[1].data["NII-6584_EQW"]])
+                    line_pars[1].data["NII_6584_EQW"]]).T
 
-amps_err = np.hstack([line_pars[1].data["H_ALPHA_FLUX_ERR"],
+amps_err = np.vstack([line_pars[1].data["H_ALPHA_FLUX_ERR"],
                       line_pars[1].data["H_BETA_FLUX_ERR"],
                       line_pars[1].data["H_GAMMA_FLUX_ERR"],
                       line_pars[1].data["H_DELTA_FLUX_ERR"],
                       line_pars[1].data["OIII_4959_FLUX_ERR"],
                       line_pars[1].data["OIII_5007_FLUX_ERR"],
-                      line_pars[1].data["NII-6584_FLUX_ERR"]])
+                      line_pars[1].data["NII_6584_FLUX_ERR"]]).T
 
-widths_err = np.hstack([line_pars[1].data["H_ALPHA_EQW_ERR"],
+widths_err = np.vstack([line_pars[1].data["H_ALPHA_EQW_ERR"],
                         line_pars[1].data["H_BETA_EQW_ERR"],
                         line_pars[1].data["H_GAMMA_EQW_ERR"],
                         line_pars[1].data["H_DELTA_EQW_ERR"],
                         line_pars[1].data["OIII_4959_EQW_ERR"],
                         line_pars[1].data["OIII_5007_EQW_ERR"],
-                        line_pars[1].data["NII-6584_EQW_ERR"]])
+                        line_pars[1].data["NII_6584_EQW_ERR"]]).T
+
+# Close data files
+
+extra.close()
+info.close()
+line_pars.close()
+
+print("Loaded data. Starting restriction...")
 
 # Apply sample restrictions
 
@@ -87,9 +102,9 @@ bpt = bpt[keep]
 for i in range(7):
 
     bad_amps = np.where(np.abs(amps[i]/amps_err[i]) <= 3,
-                        np.isfinite(amps[i]/amps_err[i]))
+                        np.isfinite(amps[i]/amps_err[i]), 1)
     bad_widths = np.where(np.abs(widths[i]/widths_err[i]) <= 3,
-                          np.isfinite(widths[i]/widths_err[i]))
+                          np.isfinite(widths[i]/widths_err[i]), 1)
     bad_errs = np.where(np.logical_or(amps_err[i] <= 0.0,
                                       widths_err[i] <= 0.0))
 
@@ -105,7 +120,14 @@ X = np.hstack([amps, widths])
 y = bpt
 
 # Finally, standardize the X data
-X = (X - np.mean(X, axis=1))/np.std(X, axis=1)
+X = (X - np.mean(X, axis=0))/np.std(X, axis=0)
+
+# To ensure this works, pick a small subset to run on
+
+# X = X[:.4*len(X)]
+# y = y[:.4*len(y)]
+
+print("Made sample set. Starting grid search.")
 
 # Use grid search to find optimal hyperparameters
 
@@ -113,12 +135,11 @@ X_train, X_test, y_train, y_test = \
     train_test_split(X, y, test_size=0.5, random_state=500)
 
 # Set the parameters by cross-validation
-tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-2, 1e-3, 1e-4],
-                     'C': [1, 10, 100, 1000]},
-                    {'kernel': ['rbf'], 'C': [1, 10, 100, 1000]}]
+tuned_parameters = [{'gamma': [0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6],
+                     'C': [1, 5, 10, 50, 100, 250, 500, 1000, 5000, 1e4]}]
 
 # Estimator
-estimator = NuSVC()
+estimator = SVC(kernel='rbf', cache_size=2000, class_weight='auto')
 
 # Add in a cross-validation method on top of the grid search
 cv = ShuffleSplit(X_train.shape[0], n_iter=10, test_size=0.5, random_state=500)
@@ -130,7 +151,8 @@ score = scores[0]
 # Do the grid search
 print("# Tuning hyper-parameters for %s" % score)
 
-clf = GridSearchCV(estimator, tuned_parameters, cv=cv, scoring=score)
+clf = GridSearchCV(estimator, tuned_parameters, cv=cv, scoring=score, n_jobs=4,
+                   verbose=2)
 clf.fit(X_train, y_train)
 
 print("Best parameters set found on development set:")
@@ -145,19 +167,20 @@ y_true, y_pred = y_test, clf.predict(X_test)
 print(classification_report(y_true, y_pred))
 
 # Make a model with the best parameters
-estimator = NuSVC(kernel='rbf', gamma=clf.best_estimator_.gamma,
-                  C=clf.best_estimator_.C)
+estimator = SVC(kernel='rbf', gamma=clf.best_estimator_.gamma,
+                C=clf.best_estimator_.C)
 
 # Plot the learning curve to find a good split
-title = 'NuSVC'
-plot_learning_curve(estimator, title, X_train, y_train, cv=cv)
-p.show()
+title = 'SVC'
+plot_learning_curve(estimator, title, X_train, y_train, cv=cv, n_jobs=4)
+p.savefig("supervised_learning.pdf")
 
 # Find a good number of test samples before moving on
 raw_input("Continue??")
 
 # With a good number of test samples found, fit the whole set to the model
-# clf.fit(X, y)
+# estimator.fit(X, y)
+# y_pred = estimator.predict(X, y)
 
 # Now take the model found, and find the outliers
 
