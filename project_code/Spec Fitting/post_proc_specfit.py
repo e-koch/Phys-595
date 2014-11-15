@@ -43,7 +43,7 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
     data_copy = data.T.copy()
     # There are 11 fitted lines and 4 parameters
 
-    for i in range(1):
+    for i in range(11):
         line_pars = \
             [np.asarray(data.iloc[i]),
              np.asarray(data.iloc[i+11]),
