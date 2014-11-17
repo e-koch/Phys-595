@@ -121,11 +121,16 @@ y = bpt
 
 # Finally, standardize the X data
 X = (X - np.mean(X, axis=0))/np.std(X, axis=0)
+# Keep a copy of the entire data set
+X_all = X.copy()
+y_all = y.copy()
+# Unfortunately the method cannot handle the size of the dataset
+# Test on a randomly selected sample using half of the data
+indices = np.arange(X.shape[0])
+np.random.shuffle(indices)
 
-# To ensure this works, pick a small subset to run on
-
-# X = X[:.4*len(X)]
-# y = y[:.4*len(y)]
+X = X[indices[:len(indices)/2]]
+y = y[indices[:len(indices)/2]]
 
 print("Made sample set. Starting grid search.")
 
@@ -142,7 +147,7 @@ tuned_parameters = [{'gamma': [0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6],
 estimator = SVC(kernel='rbf', cache_size=2000, class_weight='auto')
 
 # Add in a cross-validation method on top of the grid search
-cv = ShuffleSplit(X_train.shape[0], n_iter=10, test_size=0.5, random_state=500)
+cv = ShuffleSplit(X_train.shape[0], n_iter=5, test_size=0.8, random_state=500)
 
 # Try two different scoring methods
 scores = ['accuracy', 'precision', 'recall']
@@ -179,8 +184,13 @@ p.savefig("supervised_learning.pdf")
 raw_input("Continue??")
 
 # With a good number of test samples found, fit the whole set to the model
-# estimator.fit(X, y)
-# y_pred = estimator.predict(X, y)
+estimator.fit(X_all, y_all)
+y_pred = estimator.predict(X_all, y_all)
+print(classification_report(y_all, y_pred))
+
+# Hold here
+raw_input("Continue??")
+
 
 # Now take the model found, and find the outliers
 
