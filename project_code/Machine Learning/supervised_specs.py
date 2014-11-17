@@ -141,13 +141,13 @@ X_train, X_test, y_train, y_test = \
 
 # Set the parameters by cross-validation
 tuned_parameters = [{'gamma': [0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6],
-                     'C': [1, 5, 10, 50, 100, 250, 500, 1000, 5000, 1e4]}]
+                     'C': [0.1, 0.5, 1, 5, 10, 50, 100, 250, 500]}]
 
 # Estimator
 estimator = SVC(kernel='rbf', cache_size=2000, class_weight='auto')
 
 # Add in a cross-validation method on top of the grid search
-cv = ShuffleSplit(X_train.shape[0], n_iter=5, test_size=0.8, random_state=500)
+cv = ShuffleSplit(X_train.shape[0], n_iter=3, test_size=0.8, random_state=500)
 
 # Try two different scoring methods
 scores = ['accuracy', 'precision', 'recall']
