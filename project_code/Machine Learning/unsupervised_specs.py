@@ -11,7 +11,8 @@ from pandas import read_csv, DataFrame
 import joblib
 
 save_models = True
-learn = True
+test_params = True
+learn = False
 view = False
 
 data = read_csv("all_spec_data_cleaned.csv")
@@ -23,6 +24,30 @@ X = (X - np.mean(X, axis=0))/np.std(X, axis=0)
 
 print "Ready for some anomaly finding!"
 
+if test_params:
+    # Make a mock Grid Search, evaluating based on the number of
+    # anomalies found
+    nus = np.linspace(0.01, 1.0, 7)
+    gammas = np.linspace(1e-4, 0.5, 7)
+
+    X_train, X_test = \
+        train_test_split(X, test_size=0.5, random_state=300)
+
+    results = []
+
+    for nu in nus:
+        for gamma in gammas:
+            print "Now fitting: Nu - %s; Gamma - %s" % (nu, gamma)
+            clf = svm.OneClassSVM(nu=nu, kernel="rbf", gamma=gamma,
+                                  verbose=True)
+            clf.fit(X_train)
+
+            y_pred = clf.predict(X_test)
+            anomalies = np.where(y_pred == -1)[0]
+
+            results.append([nu, gamma, len(anomalies)])
+
+    test_df = DataFrame(results, columns=["Nu", "Gamma", "Anomalies"])
 if learn:
     for i in range(1):
         print "On %s/%s" % (i, 10)
@@ -35,9 +60,9 @@ if learn:
         y_pred = clf.predict(X_test)
 
         if i == 0:
-            anomalies = np.where(y_pred == 1)[0]
+            anomalies = np.where(y_pred == -1)[0]
         else:
-            anomalies = np.append(anomalies, np.where(y_pred == 1)[0])
+            anomalies = np.append(anomalies, np.where(y_pred == -1)[0])
 
         if save_models:
             joblib.dump(clf, "OneClassSVM_"+str(500+i)+".pkl")
