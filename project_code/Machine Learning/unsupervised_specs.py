@@ -18,6 +18,7 @@ view = False
 data = read_csv("all_spec_data_cleaned.csv")
 
 X = data[data.columns[1:]]
+X = np.asarray(X)
 
 # Standardize the data
 X = (X - np.mean(X, axis=0))/np.std(X, axis=0)
@@ -29,6 +30,11 @@ if test_params:
     # anomalies found
     nus = np.linspace(0.01, 1.0, 7)
     gammas = np.linspace(1e-4, 0.5, 7)
+
+    # Use a subset of the data to speed things up a bit
+    indices = np.arange(X.shape[0])
+    np.random.shuffle(indices)
+    X_sub = X[indices[:len(indices)/2]]
 
     X_train, X_test = \
         train_test_split(X, test_size=0.5, random_state=300)
