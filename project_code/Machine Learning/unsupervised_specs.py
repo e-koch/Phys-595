@@ -4,7 +4,7 @@ Unsupervised learning on SDSS spectral data
 '''
 
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as p
 from sklearn import svm
 from sklearn.cross_validation import train_test_split
 from pandas import read_csv, DataFrame
@@ -12,32 +12,35 @@ import joblib
 
 save_models = True
 learn = True
-view = True
+view = False
 
-data = read_csv("")
+data = read_csv("all_spec_data_cleaned.csv")
 
-X = None  # Some subset of the data columns
+X = data[data.columns[1:]]
 
 # Standardize the data
-X = (X - np.mean(X, axis=1))/np.std(X, axis=1)
+X = (X - np.mean(X, axis=0))/np.std(X, axis=0)
+
+print "Ready for some anomaly finding!"
 
 if learn:
-    for i in range(10):
+    for i in range(1):
+        print "On %s/%s" % (i, 10)
         X_train, X_test = \
             train_test_split(X, test_size=0.5, random_state=500+i)
 
-        clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
+        clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1, verbose=True)
         clf.fit(X_train)
 
         y_pred = clf.predict(X_test)
 
         if i == 0:
-            anomalies = y_pred[y_pred == 1]
+            anomalies = np.where(y_pred == 1)[0]
         else:
-            anomalies = np.append(anomalies, y_pred[y_pred == 1])
+            anomalies = np.append(anomalies, np.where(y_pred == 1)[0])
 
         if save_models:
-            joblib.dump(clf, "OneClassSVM_"+str(500+i)+"_.pkl")
+            joblib.dump(clf, "OneClassSVM_"+str(500+i)+".pkl")
 
     # Remove duplicated anomalies
 
