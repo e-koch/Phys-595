@@ -10,6 +10,7 @@ matplotlib.use('Agg')
 
 import numpy as np
 import matplotlib.pyplot as p
+from pandas import DataFrame
 
 # Use seaborn for pretty plots
 import seaborn
@@ -167,6 +168,9 @@ for params, mean_score, scores in clf.grid_scores_:
     print("%0.3f (+/-%0.03f) for %r"
           % (mean_score, scores.std() / 2, params))
 
+grid_scores = DataFrame(clf.grid_scores_)
+grid_scores.to_csv("grid_scores.csv")
+
 print("Detailed classification report:")
 y_true, y_pred = y_test, clf.predict(X_test)
 print(classification_report(y_true, y_pred))
@@ -177,14 +181,14 @@ estimator = SVC(kernel='rbf', gamma=clf.best_estimator_.gamma,
 
 # Plot the learning curve to find a good split
 title = 'SVC'
-plot_learning_curve(estimator, title, X_train, y_train, cv=cv, n_jobs=4)
-p.savefig("supervised_learning.pdf")
+# plot_learning_curve(estimator, title, X_train, y_train, cv=cv, n_jobs=4)
+# p.savefig("supervised_learning.pdf")
 
 # Find a good number of test samples before moving on
 raw_input("Continue??")
 
-# With a good number of test samples found, fit the whole set to the model
-estimator.fit(X_all, y_all)
+# With a good number of test samples found, predict the whole set to the model
+estimator.fit(X_train, y_train)
 y_pred = estimator.predict(X_all, y_all)
 print(classification_report(y_all, y_pred))
 
