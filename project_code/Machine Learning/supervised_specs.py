@@ -146,7 +146,7 @@ tuned_parameters = [{'gamma': [0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6],
                      # 'C': [0.1, 0.5, 1, 5, 10, 50, 100, 250, 500]}]
 
 # Estimator
-estimator = NuSVC(kernel='rbf', cache_size=2000, class_weight='auto')
+estimator = NuSVC(kernel='rbf', cache_size=2000) #, class_weight='auto')
 
 # Add in a cross-validation method on top of the grid search
 cv = ShuffleSplit(X_train.shape[0], n_iter=3, test_size=0.8, random_state=500)
