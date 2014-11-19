@@ -20,7 +20,7 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report
 from plot_learning_curve import plot_learning_curve
 from sklearn.cross_validation import ShuffleSplit
-from sklearn.svm import SVC
+from sklearn.svm import SVC, NuSVC
 
 from astropy.io import fits
 
@@ -142,10 +142,11 @@ X_train, X_test, y_train, y_test = \
 
 # Set the parameters by cross-validation
 tuned_parameters = [{'gamma': [0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6],
-                     'C': [0.1, 0.5, 1, 5, 10, 50, 100, 250, 500]}]
+                     'nu': [0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6]}]
+                     # 'C': [0.1, 0.5, 1, 5, 10, 50, 100, 250, 500]}]
 
 # Estimator
-estimator = SVC(kernel='rbf', cache_size=2000, class_weight='auto')
+estimator = NuSVC(kernel='rbf', cache_size=2000, class_weight='auto')
 
 # Add in a cross-validation method on top of the grid search
 cv = ShuffleSplit(X_train.shape[0], n_iter=3, test_size=0.8, random_state=500)
@@ -169,29 +170,31 @@ for params, mean_score, scores in clf.grid_scores_:
           % (mean_score, scores.std() / 2, params))
 
 grid_scores = DataFrame(clf.grid_scores_)
-grid_scores.to_csv("grid_scores.csv")
+grid_scores.to_csv("grid_scores_nusvc.csv")
 
 print("Detailed classification report:")
 y_true, y_pred = y_test, clf.predict(X_test)
 print(classification_report(y_true, y_pred))
 
 # Make a model with the best parameters
-estimator = SVC(kernel='rbf', gamma=clf.best_estimator_.gamma,
-                C=clf.best_estimator_.C)
+estimator = NuSVC(kernel='rbf', gamma=clf.best_estimator_.gamma,
+                  nu=clf.best_estimator_.nu)
+                # C=clf.best_estimator_.C)
 
 # Plot the learning curve to find a good split
-title = 'SVC'
-# plot_learning_curve(estimator, title, X_train, y_train, cv=cv, n_jobs=4)
-# p.savefig("supervised_learning.pdf")
+title = 'NuSVC'
+plot_learning_curve(estimator, title, X_train, y_train, cv=cv, n_jobs=4)
+p.savefig("supervised_learning_nusvc.pdf")
 
 # Find a good number of test samples before moving on
-raw_input("Continue??")
+# raw_input("Continue??")
 
 # With a good number of test samples found, predict the whole set to the model
 estimator.fit(X_train, y_train)
-y_pred = estimator.predict(X_all, y_all)
+y_pred = estimator.predict(X_all)
+DataFrame(y_pred).to_csv("supervised_prediction_labels_nusvc.csv")
 print(classification_report(y_all, y_pred))
-
+print "Best params are:" + str(clf.best_params_)
 # Hold here
 raw_input("Continue??")
 
