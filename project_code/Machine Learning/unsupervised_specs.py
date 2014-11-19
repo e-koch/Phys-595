@@ -12,6 +12,7 @@ import joblib
 
 save_models = True
 test_params = True
+multi = True
 learn = False
 view = False
 
@@ -28,32 +29,57 @@ print "Ready for some anomaly finding!"
 if test_params:
     # Make a mock Grid Search, evaluating based on the number of
     # anomalies found
-    nus = np.linspace(0.01, 1.0, 7)
-    gammas = np.linspace(1e-4, 0.5, 7)
+    nus = np.logspace(-6, -2, 4)
+    gammas = np.logspace(-6, -2, 4)
 
     # Use a subset of the data to speed things up a bit
     indices = np.arange(X.shape[0])
     np.random.shuffle(indices)
-    X_sub = X[indices[:len(indices)/2]]
+    X_sub = X[indices[:len(indices)/5]]
 
     X_train, X_test = \
-        train_test_split(X, test_size=0.5, random_state=300)
+        train_test_split(X, test_size=0.5, random_state=200)
 
-    results = []
+    def testing_func(a):
+        nu, gamma = a
+        print "Training with nu: %s, gamma: %s" % (nu, gamma)
+        clf = svm.OneClassSVM(nu=nu, kernel="rbf", gamma=gamma,
+                              verbose=False)
+        clf.fit(X_train)
 
-    for nu in nus:
-        for gamma in gammas:
-            print "Now fitting: Nu - %s; Gamma - %s" % (nu, gamma)
-            clf = svm.OneClassSVM(nu=nu, kernel="rbf", gamma=gamma,
-                                  verbose=True)
-            clf.fit(X_train)
+        y_pred = clf.predict(X_test)
+        anomalies = np.where(y_pred == -1)[0]
 
-            y_pred = clf.predict(X_test)
-            anomalies = np.where(y_pred == -1)[0]
+        return [nu, gamma, len(anomalies),
+                len(anomalies)/float(X_test.shape[0])]
 
-            results.append([nu, gamma, len(anomalies)])
+    if multi:
+        from multiprocessing import Pool
+        from itertools import product
 
-    test_df = DataFrame(results, columns=["Nu", "Gamma", "Anomalies"])
+        pool = Pool(processes=8)
+        results = pool.map(testing_func, product(nus, gammas))
+
+        pool.close()
+    else:
+        results = []
+
+        for nu in nus:
+            for gamma in gammas:
+                print "Now fitting: Nu - %s; Gamma - %s" % (nu, gamma)
+                clf = svm.OneClassSVM(nu=nu, kernel="rbf", gamma=gamma,
+                                      verbose=False)
+                clf.fit(X_train)
+
+                y_pred = clf.predict(X_test)
+                anomalies = np.where(y_pred == -1)[0]
+
+                results.append([nu, gamma, len(anomalies),
+                                len(anomalies)/float(X_test.shape[0])])
+
+    test_df = DataFrame(results, columns=["Nu", "Gamma", "Anomalies",
+                                          "Percent"])
+    test_df.to_csv("svm_anomaly_testing_fifth.csv")
 if learn:
     for i in range(1):
         print "On %s/%s" % (i, 10)
