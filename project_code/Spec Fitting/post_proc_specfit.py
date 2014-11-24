@@ -5,7 +5,7 @@ Post-process spectral line fitting results
 
 import numpy as np
 from pandas import read_csv, Series, concat
-import os
+import shutil
 
 
 def concat_csvs(file_list, output_name, save=True):
@@ -110,10 +110,10 @@ def collect_spectra(filename, path='anomalies/'):
         i = 0
         while True:
             try:
-                os.system("cp "+prefixes[i]+name+" "+path)
+                shutil.copyfile(prefixes[i]+name+".fits", path)
                 i = 0
                 break
-            except OSError:
+            except IOError:
                 if i > 3:
                     raise TypeError("Cannot find spectrum named: " + name)
                 i += 1
