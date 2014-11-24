@@ -7,13 +7,13 @@ import numpy as np
 import matplotlib.pyplot as p
 from sklearn import svm
 from sklearn.cross_validation import train_test_split
-from pandas import read_csv, DataFrame
+from pandas import read_csv, DataFrame, concat
 import joblib
 
-save_models = True
-test_params = True
+save_models = False
+test_params = False
 multi = True
-learn = False
+learn = True
 view = False
 
 data = read_csv("all_spec_data_cleaned.csv")
@@ -61,6 +61,7 @@ if test_params:
         results = pool.map(testing_func, product(nus, gammas))
 
         pool.close()
+        pool.join()
     else:
         results = []
 
@@ -81,29 +82,35 @@ if test_params:
                                           "Percent"])
     test_df.to_csv("svm_anomaly_testing_fifth.csv")
 if learn:
-    for i in range(1):
-        print "On %s/%s" % (i, 10)
-        X_train, X_test = \
-            train_test_split(X, test_size=0.5, random_state=500+i)
 
-        clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1, verbose=True)
+    all_anom = []
+    # Repeat the process many times
+    # Record all anomalies and look for those which are consistently
+    # labeled.
+
+    indices = np.arange(X.shape[0])
+
+    for i in range(100):
+        print "On %s/%s" % (i, 100)
+        # Need to keep track of the indices!
+        X_train, X_test, ind_train, ind_test = \
+            train_test_split(X, indices, test_size=0.5,
+                             random_state=np.random.randint(1e8))
+
+        clf = svm.OneClassSVM(nu=2e-5, kernel="rbf", gamma=5e-3, verbose=True)
         clf.fit(X_train)
 
-        y_pred = clf.predict(X_test)
+        y_pred = clf.predict(X)
 
-        if i == 0:
-            anomalies = np.where(y_pred == -1)[0]
-        else:
-            anomalies = np.append(anomalies, np.where(y_pred == -1)[0])
+        anomalies = np.where(y_pred == -1)[0]
 
+        all_anom.append(DataFrame(data.ix[anomalies]))
+        print "Number of anomalies found: " + str(anomalies.shape)
         if save_models:
             joblib.dump(clf, "OneClassSVM_"+str(500+i)+".pkl")
+        del clf
 
-    # Remove duplicated anomalies
-
-    anomalies = np.unique(anomalies)
-
-    anom_df = DataFrame(data.ix[anomalies])
+    anom_df = concat(all_anom)
     anom_df.to_csv("anomalies_ocsvm.csv")
 
 if view:
