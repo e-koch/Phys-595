@@ -5,6 +5,7 @@ Post-process spectral line fitting results
 
 import numpy as np
 from pandas import read_csv, Series, concat
+import os
 
 
 def concat_csvs(file_list, output_name, save=True):
@@ -89,3 +90,31 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
         data_copy[i+33] = Series(line_pars[3], index=data_copy.index)
 
     data_copy.to_csv(filename[:-4] + "_cleaned.csv")
+
+
+def collect_spectra(filename, path='anomalies/'):
+    '''
+    Given a dataframe with an index of files, find those files and copy them
+    to a new directory.
+    '''
+
+    df = read_csv(filename)
+
+    # Spectra names
+    names = df['Unnamed: 0']
+
+    # The files could be in any of 4 places
+    prefixes = ["samples1/", "samples2/", "samples3/", "samples4/"]
+
+    for name in names:
+        i = 0
+        while True:
+            try:
+                os.system("cp "+prefixes[i]+name+" "+path)
+                i = 0
+                break
+            except OSError:
+                if i > 3:
+                    raise TypeError("Cannot find spectrum named: " + name)
+                i += 1
+
