@@ -92,7 +92,7 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
     data_copy.to_csv(filename[:-4] + "_cleaned.csv")
 
 
-def collect_spectra(filename, path='anomalies/'):
+def collect_spectra(filename, path='anomalies/', verbose=True):
     '''
     Given a dataframe with an index of files, find those files and copy them
     to a new directory.
@@ -107,6 +107,12 @@ def collect_spectra(filename, path='anomalies/'):
     prefixes = ["samples1/", "samples2/", "samples3/", "samples4/"]
 
     for name in names:
+        # Need to make sure the filename is right...
+        if len(name.split("-")[1]) < 4:
+            add_zeros = 4 - len(name.split("-"))
+            split_name = name.split("-")
+            split_name[1] = "0"*add_zeros + split_name[1]
+            name = "-".join(split_name)
         i = 0
         while True:
             try:
