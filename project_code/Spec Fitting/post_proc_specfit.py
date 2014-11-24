@@ -116,7 +116,7 @@ def collect_spectra(filename, path='anomalies/', verbose=True):
         i = 0
         while True:
             try:
-                shutil.copyfile(prefixes[i]+name+".fits", path)
+                shutil.copy("/mnt/"+prefixes[i]+name+".fits", "/mnt"+path)
                 i = 0
                 break
             except IOError:
