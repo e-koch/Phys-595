@@ -104,7 +104,7 @@ def collect_spectra(filename, path='anomalies/', verbose=True):
     names = df['Unnamed: 0.1'].drop_duplicates()
 
     # The files could be in any of 4 places
-    prefixes = ["samples1/", "samples2/", "samples3/", "samples4/"]
+    prefixes = ["samples_1/", "samples_2/", "samples_3/", "samples_4/"]
 
     for name in names:
         # Need to make sure the filename is right...
