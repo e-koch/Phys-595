@@ -101,7 +101,7 @@ def collect_spectra(filename, path='anomalies/'):
     df = read_csv(filename)
 
     # Spectra names
-    names = df['Unnamed: 0']
+    names = df['Unnamed: 0'].drop_duplicates()
 
     # The files could be in any of 4 places
     prefixes = ["samples1/", "samples2/", "samples3/", "samples4/"]
@@ -117,4 +117,3 @@ def collect_spectra(filename, path='anomalies/'):
                 if i > 3:
                     raise TypeError("Cannot find spectrum named: " + name)
                 i += 1
-
