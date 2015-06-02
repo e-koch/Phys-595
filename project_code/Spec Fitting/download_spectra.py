@@ -30,7 +30,7 @@ def download_spectra(plateid, fibreid, mjd, survey, download=False,
     filename = "spec-"+plateid+"-"+mjd+"-"+fibreid+".fits"
 
     if survey == 'boss':
-        file_suffix = "sdss/spectro/redux/v5_5_12/spectra/lite/"+plateid+"/"+filename
+        file_suffix = "sdss/spectro/redux/v5_7_2/spectra/lite/"+plateid+"/"+filename
     elif survey == 'sdss' or survey == 'segue1' and plateid not in segue1_list:
         file_suffix = "sdss/spectro/redux/26/spectra/lite/"+plateid+"/"+filename
     elif survey == 'segue1' and plateid in segue1_list:
@@ -42,7 +42,7 @@ def download_spectra(plateid, fibreid, mjd, survey, download=False,
 
     if download:
         # Check to make sure that file exists
-        os.system("wget http://data.sdss3.org/sas/dr10/"+file_suffix)
+        os.system("wget http://data.sdss3.org/sas/dr12/"+file_suffix)
 
         try:
             fits.open(file_suffix)
