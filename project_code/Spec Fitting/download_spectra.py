@@ -58,7 +58,7 @@ def download_spectra(plateid, fibreid, mjd, survey, download=False,
         return file_suffix
 
 
-def download_list(obs_file, output_file):
+def download_list(obs_file, output_file, name_only=False):
     '''
     Makes a txt file with the locations of the files to download.
     '''
@@ -80,7 +80,7 @@ def download_list(obs_file, output_file):
         spec_name = \
             download_spectra(spec_info['PLATE'], spec_info['FIBERID'],
                              spec_info['MJD'], spec_info['SURVEY'],
-                             download=False)
+                             download=False, name_only=name_only)
 
         output.write("%s\n" % spec_name)
 
