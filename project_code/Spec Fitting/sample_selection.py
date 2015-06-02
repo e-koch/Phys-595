@@ -36,4 +36,5 @@ del samples_hdu, samples, table_hdu
 
 from download_spectra import download_list
 
-download_list("good_samples.fits", "all_samples_list.csv")
+download_list("good_samples.fits", "all_samples_list.csv",
+              name_only=False)
