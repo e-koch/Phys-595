@@ -31,6 +31,8 @@ samples = np.logical_and(zwarn == 0, samples)
 # Take best spectrum if there are duplicates of an object
 samples = np.logical_and(primspec == 1, samples)
 
+print("Found "+str(sum(samples))+" good samples out of "+str(z.shape[0]))
+
 good_samples = table_hdu[1].data[samples]
 
 samples_hdu = \
