@@ -9,17 +9,26 @@ import numpy as np
 
 table_hdu = fits.open("specObj-dr12.fits", ignore_missing_end=True)
 
-z = table_hdu[1].data["Z"]
-z_err = table_hdu[1].data["Z_ERR"]
+classes = table_hdu[1].data["CLASS_NOQSO"]
+z = table_hdu[1].data["Z_NOQSO"]
+z_err = table_hdu[1].data["Z_ERR_NOQSO"]
 ston = table_hdu[1].data["SN_MEDIAN_ALL"]
-zwarn = table_hdu[1].data["ZWARNING"]
+zwarn = table_hdu[1].data["ZWARNING_NOQSO"]
 primspec = table_hdu[1].data["SPECPRIMARY"]
 
-
-samples = np.logical_and(z < 0.36, z > 0.015)
+# Grab galaxies
+samples = (classes == 'GALAXY')
+# Redshift limits
+samples = np.logical_and(z < 0.36, samples)
+samples = np.logical_and(z > 0.015, samples)
+# Limit on redshift error, and ensure no 'bad' negative error
 samples = np.logical_and(z_err < 0.05, samples)
+samples = np.logical_and(z_err > 0.0, samples)
+# S/N > 5 averaged over all frames
 samples = np.logical_and(ston > 5, samples)
+# No warning flags
 samples = np.logical_and(zwarn == 0, samples)
+# Take best spectrum if there are duplicates of an object
 samples = np.logical_and(primspec == 1, samples)
 
 good_samples = table_hdu[1].data[samples]
