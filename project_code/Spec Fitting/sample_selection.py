@@ -11,11 +11,11 @@ from download_spectra import download_list
 
 table_hdu = fits.open("specObj-dr12.fits", ignore_missing_end=True)
 
-classes = table_hdu[1].data["CLASS_NOSQO"]
-z = table_hdu[1].data["Z_NOSQO"]
-z_err = table_hdu[1].data["Z_ERR_NOSQO"]
+classes = table_hdu[1].data["CLASS_NOQSO"]
+z = table_hdu[1].data["Z_NOQSO"]
+z_err = table_hdu[1].data["Z_ERR_NOQSO"]
 ston = table_hdu[1].data["SN_MEDIAN_ALL"]
-zwarn = table_hdu[1].data["ZWARNING_NOSQO"]
+zwarn = table_hdu[1].data["ZWARNING_NOQSO"]
 primspec = table_hdu[1].data["SPECPRIMARY"]
 
 # Grab galaxies
