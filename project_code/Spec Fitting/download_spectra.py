@@ -30,12 +30,12 @@ def download_spectra(plateid, fibreid, mjd, survey, download=False,
     filename = "spec-"+plateid+"-"+mjd+"-"+fibreid+".fits"
 
     if survey == 'boss':
-        file_suffix = "sdss/spectro/redux/v5_7_2/spectra/lite/"+plateid+"/"+filename
-    elif survey == 'sdss' or survey == 'segue1' and plateid not in segue1_list:
-        file_suffix = "sdss/spectro/redux/26/spectra/lite/"+plateid+"/"+filename
+        file_suffix = "sdss/spectro/redux/v5_7_0/spectra/lite/"+plateid+"/"+filename
+    # elif survey == 'sdss' or survey == 'segue1' and plateid not in segue1_list:
+    #     file_suffix = "sdss/spectro/redux/26/spectra/lite/"+plateid+"/"+filename
     elif survey == 'segue1' and plateid in segue1_list:
         file_suffix = "sdss/spectro/redux/103/spectra/lite/"+plateid+"/"+filename
-    elif survey == 'segue2':
+    elif survey == 'segue2' or survey == "segue1":
         file_suffix = "sdss/spectro/redux/104/spectra/lite/"+plateid+"/"+filename
     else:
         raise NameError("Check the survey name. Inputted was %s" % (survey))
