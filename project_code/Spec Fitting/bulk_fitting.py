@@ -113,14 +113,21 @@ def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
         df.to_csv("spectral_fitting_"+str(i+1)+".csv")
 
 
-
 if __name__ == "__main__":
 
     import sys
 
     input_file = str(sys.argv[1])
     output_file = str(sys.argv[2])
+    parallel = sys.argv[3]
+
+    if parallel == 'True':
+        parallel = True
 
     restart_point = int(sys.argv[3])
 
-    bulk_fit(input_file, output_file, num_start=restart_point)
+    if parallel:
+        ncores = int(sys.argv[4])
+        parallel_bulkfit(input_file, start_pt=restart_point, ncores=ncores)
+    else:
+        bulk_fit(input_file, output_file, num_start=restart_point)
