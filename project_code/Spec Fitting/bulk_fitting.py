@@ -123,15 +123,15 @@ if __name__ == "__main__":
 
     input_file = str(sys.argv[1])
     output_file = str(sys.argv[2])
-    parallel = sys.argv[3]
+    restart_point = int(sys.argv[3])
+
+    parallel = sys.argv[4]
 
     if parallel == 'True':
         parallel = True
 
-    restart_point = int(sys.argv[3])
-
     if parallel:
-        ncores = int(sys.argv[4])
+        ncores = int(sys.argv[5])
         parallel_bulkfit(input_file, start_pt=restart_point, ncores=ncores)
     else:
         bulk_fit(input_file, output_file, num_start=restart_point)
