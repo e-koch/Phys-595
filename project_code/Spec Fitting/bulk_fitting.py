@@ -131,6 +131,8 @@ def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
 
 
 def single_input(a):
+    print len(a)
+    print a
     return do_specfit(*a)
 
 if __name__ == "__main__":
