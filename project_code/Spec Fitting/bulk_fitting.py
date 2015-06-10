@@ -8,6 +8,7 @@ import shutil
 from astropy.io import fits
 from pandas import DataFrame, Series
 import numpy as np
+from multiprocessing import Pool
 
 # Bring in the package funcs
 from specfit import do_specfit
@@ -79,6 +80,39 @@ def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
         df.to_csv(output_file)
 
     return
+
+
+def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
+    '''
+    Run bulk fitting in parallel. Results are outputted in chunks to make
+    restarting easier.
+    '''
+
+    spectra = [f for f in os.listdir(path) if f[-4:] == 'fits']
+
+    split_at = len(spectra) / num_splits
+
+    splits = [split_at*i for i in range(1, num_splits-1)]
+    splits.append(len(spectra))
+
+    splits = splits[start_pt:]
+
+    for i, split in enumerate(splits):
+
+        split_spectra = spectra[:split]
+
+        pool = Pool(processes=ncores)
+
+        output = pool.map(do_specfit, split_spectra)
+
+        df = DataFrame(output[0], columns=split_spectra[0])
+
+        for out, spec in zip(output[1:], split_spectra[1:]):
+            df[spec[:-5]] = out
+
+        df.to_csv("spectral_fitting_"+str(i+1)+".csv")
+
+
 
 if __name__ == "__main__":
 
