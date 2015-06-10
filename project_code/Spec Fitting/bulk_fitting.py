@@ -117,8 +117,8 @@ def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
 
         output = pool.map(do_specfit, split_spectra)
 
-        pool.join()
         pool.close()
+        pool.join()
 
         print output
 
