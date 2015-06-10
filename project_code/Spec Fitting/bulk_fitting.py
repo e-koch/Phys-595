@@ -93,7 +93,7 @@ def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
 
     split_at = len(spectra) / num_splits
 
-    splits = [split_at*i for i in range(1, num_splits-1)]
+    splits = [split_at*i for i in range(1, num_splits)]
     splits.append(len(spectra))
 
     splits = splits[start_pt:]
