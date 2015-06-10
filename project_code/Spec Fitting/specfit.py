@@ -24,10 +24,14 @@ line_dict = {"Halp + NII": [None, 6548.0, None, 6562.8, 3.0, None, 6583.4, 3.0],
 def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
                                 "Ca H + Ca K",
                                 "Mg", "NaI", "OIIIa + OIIIb"],
-               fix_lambda=True, smooth_size=3, verbose=False):
+               fix_lambda=True, smooth_size=3, verbose=False,
+               verbose_print=True):
     '''
     Given a FITS file, fit the specified lines to the spectra.
     '''
+
+    if verbose_print:
+        print "Running on " + filename
 
     spec_file = fits.open(filename)
 
