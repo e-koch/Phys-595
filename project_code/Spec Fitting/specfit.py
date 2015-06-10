@@ -11,7 +11,7 @@ from pandas import Series
 from scipy.ndimage import median_filter
 
 
-line_dict = {"Halp + NII": [None, 6562.8, 3.0, None, 6583.4, 3.0],
+line_dict = {"Halp + NII": [None, 6548.0, None, 6562.8, 3.0, None, 6583.4, 3.0],
              "Hbet": [None, 4861.3, 3.0],
              "Hgam": [None, 4340.0, 3.0],
              "Hdel": [None, 4102.8, 3.0],
