@@ -186,7 +186,9 @@ def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
     # ser = Series(np.hstack([line_params, line_errs]).ravel(),
     #              index=line_and_par_names)
 
-    ser = np.hstack([line_and_par_names, line_params, line_errs])
+    # ser = np.hstack([line_and_par_names, line_params, line_errs])
+
+    ser = 0
 
     return ser
 
