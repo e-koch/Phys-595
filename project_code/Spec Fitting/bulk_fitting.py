@@ -111,7 +111,7 @@ def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
 
         split_spectra = spectra[prev_split:split]
 
-        print len(split_spectra)
+        split_spectra = split_spectra[:10]
 
         pool = Pool(processes=ncores)
 
@@ -120,14 +120,16 @@ def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
         pool.join()
         pool.close()
 
-        df = DataFrame(output[0], columns=split_spectra[0])
+        print output
 
-        for out, spec in zip(output[1:], split_spectra[1:]):
-            df[spec[:-5]] = out
+        # df = DataFrame(output[0], columns=split_spectra[0])
 
-        df.to_csv("spectral_fitting_"+str(i+1)+".csv")
+        # for out, spec in zip(output[1:], split_spectra[1:]):
+        #     df[spec[:-5]] = out
 
-        prev_split = split
+        # df.to_csv("spectral_fitting_"+str(i+1)+".csv")
+
+        # prev_split = split
 
 
 if __name__ == "__main__":
