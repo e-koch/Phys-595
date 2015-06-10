@@ -109,6 +109,9 @@ def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
 
         output = pool.map(do_specfit, split_spectra)
 
+        pool.join()
+        pool.close()
+
         df = DataFrame(output[0], columns=split_spectra[0])
 
         for out, spec in zip(output[1:], split_spectra[1:]):
