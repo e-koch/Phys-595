@@ -11,7 +11,8 @@ from pandas import Series
 from scipy.ndimage import median_filter
 
 
-line_dict = {"Halp + NII": [None, 6548.0, 3.0, None, 6562.8, 3.0, None, 6583.4, 3.0],
+line_dict = {"NIIa + Halp + NIIb": [None, 6548.0, 3.0, None, 6562.8, 3.0,
+                                    None, 6583.4, 3.0],
              "Hbet": [None, 4861.3, 3.0],
              "Hgam": [None, 4340.0, 3.0],
              "Hdel": [None, 4102.8, 3.0],
@@ -21,7 +22,7 @@ line_dict = {"Halp + NII": [None, 6548.0, 3.0, None, 6562.8, 3.0, None, 6583.4, 
              "OIIIa + OIIIb": [None, 4959.0, 3.0, None, 5006.8, 3.0]}
 
 
-def do_specfit(filename, lines=["Halp + NII", "Hbet", "Hgam", "Hdel",
+def do_specfit(filename, lines=["NIIa + Halp + NIIb", "Hbet", "Hgam", "Hdel",
                                 "Ca H + Ca K",
                                 "Mg", "NaI", "OIIIa + OIIIb"],
                fix_lambda=True, smooth_size=3, verbose=False,
