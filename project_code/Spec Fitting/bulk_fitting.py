@@ -10,10 +10,10 @@ from pandas import DataFrame, Series
 import numpy as np
 from datetime import datetime
 
-try:
-    from interruptible_pool import InterruptiblePool as Pool
-except ImportError:
-    from multiprocessing import Pool
+# try:
+#     from interruptible_pool import InterruptiblePool as Pool
+# except ImportError:
+from multiprocessing import Pool
 
 # Bring in the package funcs
 from specfit import do_specfit
