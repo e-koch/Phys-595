@@ -100,12 +100,14 @@ def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
 
     print splits
 
+    prev_split = 0
+
     for i, split in enumerate(splits):
 
         print("On split " + str(i+1) + " of " + str(len(splits)))
         print(str(datetime.now()))
 
-        split_spectra = spectra[:split]
+        split_spectra = spectra[prev_split:split]
 
         print len(split_spectra)
 
@@ -123,6 +125,7 @@ def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
 
         # df.to_csv("spectral_fitting_"+str(i+1)+".csv")
 
+        prev_split = split
 
 if __name__ == "__main__":
 
