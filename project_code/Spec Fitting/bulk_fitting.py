@@ -87,7 +87,7 @@ def bulk_fit(obs_file, output_file, keep_spectra=True, split_save=True,
     return
 
 
-def parallel_bulkfit(path, num_splits=10, ncores=8, start_pt=0):
+def parallel_bulkfit(path, num_splits=20, ncores=8, start_pt=0):
     '''
     Run bulk fitting in parallel. Results are outputted in chunks to make
     restarting easier.
