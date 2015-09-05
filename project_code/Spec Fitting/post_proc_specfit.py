@@ -38,8 +38,7 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
     Along with the minimum S/N inputs, any error less than 0 is blanked.
     '''
 
-    data = read_csv(filename)
-    del data["Unnamed: 0"]
+    data = read_csv(filename, index_col=0)
 
     data_copy = data.T.copy()
     # There are 11 fitted lines and 4 parameters
