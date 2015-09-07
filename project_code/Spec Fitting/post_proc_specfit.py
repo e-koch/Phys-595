@@ -40,15 +40,17 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
 
     data = read_csv(filename, index_col=0)
 
-    data_copy = data.T.copy()
+    data_copy = data.copy()
     # There are 12 fitted lines and 4 parameters
 
-    for i in range(12):
+    num_lines = 12
+
+    for i in range(num_lines):
         line_pars = \
             [np.asarray(data.iloc[i]),
-             np.asarray(data.iloc[i+11]),
-             np.asarray(data.iloc[i+22]),
-             np.asarray(data.iloc[i+33])]
+             np.asarray(data.iloc[i+num_lines]),
+             np.asarray(data.iloc[i+2*num_lines]),
+             np.asarray(data.iloc[i+3*num_lines])]
 
         good_err_1 = (line_pars[2] > 0)
         good_err_2 = (line_pars[3] > 0)
