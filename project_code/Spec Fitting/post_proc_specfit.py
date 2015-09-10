@@ -30,7 +30,8 @@ def concat_csvs(file_list, output_name, save=True):
         return data
 
 
-def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
+def blank_the_crap(filename, min_amp_sn=3, min_width_sn=3,
+                   num_lines=12):
     '''
     Function to blank bad fits. Since the fits performed are highly
     restricted, bad fits are assumed to be non-detections.
@@ -40,58 +41,54 @@ def blank_the_crap(filename, min_amp_sn=3, min_wid_sn=3):
 
     data = read_csv(filename, index_col=0)
 
-    data_copy = data.copy()
+    df = data.copy()
+
     # There are 12 fitted lines and 4 parameters
 
-    num_lines = 12
+    columns = df.columns
+
+    assert len(columns) == num_lines * 4
+
+    # df["Halp Amplitude"][df.index[np.where((df['Halp Amplitude']/df["Halp Amplitude Error"]).abs() <=1)]] = 0.0
 
     for i in range(num_lines):
-        line_pars = \
-            [np.asarray(data.iloc[i]),
-             np.asarray(data.iloc[i+num_lines]),
-             np.asarray(data.iloc[i+2*num_lines]),
-             np.asarray(data.iloc[i+3*num_lines])]
 
-        good_err_1 = (line_pars[2] > 0)
-        good_err_2 = (line_pars[3] > 0)
+        amp = df[columns[i]]
+        width = df[columns[i+num_lines]]
+        amp_err = df[columns[i+2*num_lines]]
+        width_err = df[columns[i+3*num_lines]]
 
-        posns_err_1 = np.where(good_err_1 == 0)
-        posns_err_2 = np.where(good_err_2 == 0)
+        # Remove fits where either error is 0
+        bad_errs = \
+            df.index[np.where(np.logical_or(amp_err <= 0.0,
+                                            width_err <= 0.0))]
 
-        good_sn_amp = (np.abs(line_pars[0]/line_pars[2]) >= min_amp_sn)
+        bad_sn_amp = df.index[np.where(np.abs(amp / amp_err) < min_amp_sn)]
 
-        posns_amp = np.where(good_sn_amp == 0)
+        bad_sn_width = \
+            df.index[np.where(np.abs(width / width_err) < min_width_sn)]
 
-        good_sn_wid = (np.abs(line_pars[1]/line_pars[3]) >= min_wid_sn)
+        amp[bad_errs] = 0.0
+        amp[bad_sn_amp] = 0.0
+        amp[bad_sn_width] = 0.0
 
-        posns_wid = np.where(good_sn_wid == 0)
+        width[bad_errs] = 0.0
+        width[bad_sn_amp] = 0.0
+        width[bad_sn_width] = 0.0
 
-        line_pars[0][posns_err_1[0]] = 0.0
-        line_pars[1][posns_err_1[0]] = 0.0
-        line_pars[2][posns_err_1[0]] = 0.0
-        line_pars[3][posns_err_1[0]] = 0.0
-        line_pars[0][posns_err_2[0]] = 0.0
-        line_pars[1][posns_err_2[0]] = 0.0
-        line_pars[2][posns_err_2[0]] = 0.0
-        line_pars[3][posns_err_2[0]] = 0.0
+        df[columns[i]] = amp
+        df[columns[i+num_lines]] = width
 
-        line_pars[0][posns_amp[0]] = 0.0
-        line_pars[1][posns_amp[0]] = 0.0
-        line_pars[2][posns_amp[0]] = 0.0
-        line_pars[3][posns_amp[0]] = 0.0
+    # Save cleaned version without the error columns
 
-        line_pars[0][posns_wid[0]] = 0.0
-        line_pars[1][posns_wid[0]] = 0.0
-        line_pars[2][posns_wid[0]] = 0.0
-        line_pars[3][posns_wid[0]] = 0.0
+    df.iloc[:, :2*num_lines].to_csv(filename[:-4] + "_cleaned.csv")
 
-        data_copy[i] = Series(line_pars[0], index=data_copy.index)
-        data_copy[i+11] = Series(line_pars[1], index=data_copy.index)
-        data_copy[i+22] = Series(line_pars[2], index=data_copy.index)
-        data_copy[i+33] = Series(line_pars[3], index=data_copy.index)
 
-    data_copy.to_csv(filename[:-4] + "_cleaned.csv")
-
+def make_weighted_df(df):
+    '''
+    Weight by the inverse squared of the errors.
+    '''
+    pass
 
 def collect_spectra(filename, path='anomalies/', verbose=True):
     '''
