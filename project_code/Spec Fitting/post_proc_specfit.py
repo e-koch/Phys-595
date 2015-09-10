@@ -58,8 +58,6 @@ def blank_the_crap(filename, min_amp_sn=3, min_width_sn=3,
 
     assert len(columns) == num_lines * 4
 
-    # df["Halp Amplitude"][df.index[np.where((df['Halp Amplitude']/df["Halp Amplitude Error"]).abs() <=1)]] = 0.0
-
     for i in range(num_lines):
 
         amp = df[columns[i]]
