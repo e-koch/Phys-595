@@ -31,17 +31,26 @@ def concat_csvs(file_list, output_name, save=True):
 
 
 def blank_the_crap(filename, min_amp_sn=3, min_width_sn=3,
-                   num_lines=12):
+                   num_lines=12, remove_failed=True):
     '''
     Function to blank bad fits. Since the fits performed are highly
     restricted, bad fits are assumed to be non-detections.
 
     Along with the minimum S/N inputs, any error less than 0 is blanked.
+
+    Parameters
+    ----------
+    remove_failed : bool, optional
+        Uses spurious_blanking to remove small number of
+        failed fits.
+
     '''
 
     data = read_csv(filename, index_col=0)
 
     df = data.copy()
+
+    df = spurious_blanking(df)
 
     # There are 12 fitted lines and 4 parameters
 
