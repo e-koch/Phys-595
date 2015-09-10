@@ -90,6 +90,43 @@ def make_weighted_df(df):
     '''
     pass
 
+
+def spurious_blanking(df):
+    '''
+    A small number of spectra have various systematic problems.
+    Most just show up as terrible fits, and are removed, but a few
+    completely fail.
+    '''
+
+    bad_halp_nii = \
+        [u'spec-0931-52619-0176', u'spec-1240-52734-0249',
+         u'spec-2153-54212-0176', u'spec-2478-54097-0218',
+         u'spec-2003-53442-0250', u'spec-2286-53700-0250']
+
+    for spec in bad_halp_nii:
+        df.ix[spec]['NIIa Amplitude'] = 0.0
+        df.ix[spec]['Halp Amplitude'] = 0.0
+        df.ix[spec]['NIIb Amplitude'] = 0.0
+
+        df.ix[spec]['NIIa Width'] = 0.0
+        df.ix[spec]['Halp Width'] = 0.0
+        df.ix[spec]['NIIb Width'] = 0.0
+
+
+    bad_ca_hk = \
+        [u'spec-1085-52531-0278', u'spec-1053-52468-0523',
+         u'spec-1320-52759-0280', u'spec-2642-54232-0522']
+
+    for spec in bad_ca_hk:
+        df.ix[spec]['Ca H Amplitude'] = 0.0
+        df.ix[spec]['Ca K Amplitude'] = 0.0
+
+        df.ix[spec]['Ca H Width'] = 0.0
+        df.ix[spec]['Ca K Width'] = 0.0
+
+    return df
+
+
 def collect_spectra(filename, path='anomalies/', verbose=True):
     '''
     Given a dataframe with an index of files, find those files and copy them
